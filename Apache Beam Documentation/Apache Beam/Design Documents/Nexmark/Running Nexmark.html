@@ -1,0 +1,180 @@
+<h2 id="RunningNexmark-Whatitis">What it is</h2><p>Nexmark is a suite of pipelines inspired by the ‘continuous data stream’ queries in <a class="external-link" href="http://datalab.cs.pdx.edu/niagaraST/NEXMark/" rel="nofollow">Nexmark research paper</a></p><p>These are multiple queries over a three entities model representing on online auction system:</p><ul><li><strong>Person</strong> represents a person submitting an item for auction and/or making a bid on an auction.</li><li><strong>Auction</strong> represents an item under auction.</li><li><strong>Bid</strong> represents a bid for an item under auction.</li></ul><h2 id="RunningNexmark-Thequeries">The queries</h2><p>The queries exercise many aspects of Beam model:</p><ul><li><strong>Query1</strong>: What are the bid values in Euro’s? Illustrates a simple map.</li><li><strong>Query2</strong>: What are the auctions with particular auction numbers? Illustrates a simple filter.</li><li><strong>Query3</strong>: Who is selling in particular US states? Illustrates an incremental join (using per-key state and timer) and filter.</li><li><strong>Query4</strong>: What is the average selling price for each auction category? Illustrates complex join (using custom window functions) and aggregation.</li><li><strong>Query5</strong>: Which auctions have seen the most bids in the last period? Illustrates sliding windows and combiners.</li><li><strong>Query6</strong>: What is the average selling price per seller for their last 10 closed auctions. Shares the same ‘winning bids’ core as for <strong>Query4</strong>, and illustrates a specialized combiner.</li><li><strong>Query7</strong>: What are the highest bids per period? Deliberately implemented using a side input to illustrate fanout.</li><li><strong>Query8</strong>: Who has entered the system and created an auction in the last period? Illustrates a simple join.</li></ul><p>We have augmented the original queries with five more:</p><ul><li><strong>Query0</strong>: Pass-through. Allows us to measure the monitoring overhead.</li><li><strong>Query9</strong>: Winning-bids. A common sub-query shared by <strong>Query4</strong> and <strong>Query6</strong>.</li><li><strong>Query10</strong>: Log all events to GCS files. Illustrates windows with large side effects on firing.</li><li><strong>Query11</strong>: How many bids did a user make in each session they were active? Illustrates session windows.</li><li><strong>Query12</strong>: How many bids does a user make within a fixed processing time limit? Illustrates working in processing time in the Global window, as compared with event time in non-Global windows for all the other queries.</li></ul><h2 id="RunningNexmark-Benchmarkworkloadconfiguration">Benchmark workload configuration</h2><p>Here are some of the knobs of the benchmark workload (see <a class="external-link" href="https://github.com/apache/beam/blob/master/sdks/java/testing/nexmark/src/main/java/org/apache/beam/sdk/nexmark/NexmarkConfiguration.java" rel="nofollow">NexmarkConfiguration.java</a>).</p><p>These configuration items can be passed to the launch command line.</p><h3 id="RunningNexmark-Eventsgeneration(defaults)">Events generation (defaults)</h3><ul><li>100 000 events generated</li><li>100 generator threads</li><li>Event rate in SIN curve</li><li>Initial event rate of 10 000</li><li>Event rate step of 10 000</li><li>100 concurrent auctions</li><li>1000 concurrent persons bidding / creating auctions</li></ul><h3 id="RunningNexmark-Windows(defaults)">Windows (defaults)</h3><ul><li>size 10s</li><li>sliding period 5s</li><li>watermark hold for 0s</li></ul><h3 id="RunningNexmark-EventsProportions(defaults)">Events Proportions (defaults)</h3><ul><li>Hot Auctions = ½</li><li>Hot Bidders =¼</li><li>Hot Sellers=¼</li></ul><h3 id="RunningNexmark-Technical">Technical</h3><ul><li>Artificial CPU load</li><li>Artificial IO load</li></ul><h2 id="RunningNexmark-Nexmarkoutput">Nexmark output</h2><p>Here is an example output of the Nexmark benchmark run in streaming mode with the SMOKE suite on the (local) direct runner:</p><pre>Performance:
+  Conf       Runtime(sec)         Events(/sec)         Results
+  0000                5,5              18138,9          100000
+  0001                4,2              23657,4           92000
+  0002                2,2              45683,0             351
+  0003                3,9              25348,5             444
+  0004                1,6               6207,3              40
+  0005                5,0              20173,5              12
+  0006                0,9              11376,6             401
+  0007              121,4                823,5               1
+  0008                2,5              40273,9            6000
+  0009                0,9              10695,2             298
+  0010                4,0              25025,0               1
+  0011                4,4              22655,2            1919
+  0012                3,5              28208,7            1919
+</pre><h2 id="RunningNexmark-Benchmarklaunchconfiguration">Benchmark launch configuration</h2><p>The Nexmark launcher accepts the <code class="highlighter-rouge">--runner</code> argument as usual for programs that use Beam PipelineOptions to manage their command line arguments. In addition to this, the necessary dependencies must be configured.</p><p>When running via Gradle, the following two parameters control the execution:</p><pre class="highlight"><code>-P nexmark.args
+    The command line to pass to the Nexmark main program.
+
+-P nexmark.runner
+The Gradle project name of the runner, such as &quot;:runners:direct-java&quot; or
+&quot;:runners:flink. The project names can be found in the root
+    `settings.gradle`.
+</code></pre><p>Test data is deterministically synthesized on demand. The test data may be synthesized in the same pipeline as the query itself, or may be published to Pub/Sub or Kafka.</p><p>The query results may be:</p><ul><li>Published to Pub/Sub or Kafka.</li><li>Written to text files as plain text.</li><li>Written to text files using an Avro encoding.</li><li>Sent to BigQuery.</li><li>Discarded.</li></ul><h3 id="RunningNexmark-Commonconfigurationparameters">Common configuration parameters</h3><p>Decide if batch or streaming:</p><pre class="highlight"><code>--streaming=true
+</code></pre><p>Number of events generators:</p><pre class="highlight"><code>--numEventGenerators=4
+</code></pre><p>Run query N:</p><pre class="highlight"><code>--query=N
+</code></pre><h3 id="RunningNexmark-AvailableSuites">Available Suites</h3><p>The suite to run can be chosen using this configuration parameter:</p><pre class="highlight"><code>--suite=SUITE
+</code></pre><p>Available suites are:</p><ul><li>DEFAULT: Test default configuration with query 0.</li><li>SMOKE: Run the 12 default configurations.</li><li>STRESS: Like smoke but for 1m events.</li><li>FULL_THROTTLE: Like SMOKE but 100m events.</li></ul><h3 id="RunningNexmark-Apexrunnerspecificconfiguration">Apex runner specific configuration</h3><pre class="highlight"><code>--manageResources=false --monitorJobs=false
+</code></pre><h3 id="RunningNexmark-GoogleCloudDataflowrunnerspecificconfiguration">Google Cloud Dataflow runner specific configuration</h3><pre class="highlight"><code>--manageResources=false --monitorJobs=true \
+--enforceEncodability=false --enforceImmutability=false
+--project=&lt;your project&gt; \
+--zone=&lt;your zone&gt; \
+--workerMachineType=n1-highmem-8 \
+--stagingLocation=gs://&lt;a gs path for staging&gt; \
+--runner=DataflowRunner \
+--tempLocation=gs://&lt;a gs path for temporary files&gt; \
+--filesToStage=target/beam-sdks-java-nexmark-2.8.0.jar
+</code></pre><h3 id="RunningNexmark-Directrunnerspecificconfiguration">Direct runner specific configuration</h3><pre class="highlight"><code>--manageResources=false --monitorJobs=true \
+--enforceEncodability=false --enforceImmutability=false
+</code></pre><h3 id="RunningNexmark-Flinkrunnerspecificconfiguration">Flink runner specific configuration</h3><pre class="highlight"><code>--manageResources=false --monitorJobs=true \
+--flinkMaster=local --parallelism=#numcores
+</code></pre><h3 id="RunningNexmark-Sparkrunnerspecificconfiguration">Spark runner specific configuration</h3><pre class="highlight"><code>--manageResources=false --monitorJobs=true \
+--sparkMaster=local \
+-Dspark.ui.enabled=false -DSPARK_LOCAL_IP=localhost -Dsun.io.serialization.extendedDebugInfo=true
+</code></pre><h3 id="RunningNexmark-Kafkasource/sinkconfigurationparameters">Kafka source/sink configuration parameters</h3><p>Set Kafka host/ip (for example, “localhost:9092”):</p><pre class="highlight"><code>--bootstrapServers=&lt;kafka host/ip&gt; 
+</code></pre><p>Write results into Kafka topic:</p><pre class="highlight"><code>--sinkType=KAFKA
+</code></pre><p>Set topic name which will be used for benchmark results:</p><pre class="highlight"><code>--kafkaResultsTopic=&lt;topic name&gt;
+</code></pre><p>Write or/and read events into/from Kafka topic:</p><pre class="highlight"><code>--sourceType=KAFKA
+</code></pre><p>Set topic name which will be used for benchmark events:</p><pre class="highlight"><code>--kafkaTopic=&lt;topic name&gt;
+</code></pre><h2 id="RunningNexmark-Currentstatus">Current status</h2><p>These tables contain statuses of the queries runs in the different runners. Google Cloud Dataflow and Apache Gearpump statuses are yet to come.</p><h3 id="RunningNexmark-Batch/Synthetic/Local">Batch / Synthetic / Local</h3><div class="table-wrap"><table class="wrapped confluenceTable"><colgroup><col/><col/><col/><col/><col/></colgroup><tbody><tr><th style="text-align: left;" class="confluenceTh">Query</th><th style="text-align: left;" class="confluenceTh">Direct</th><th style="text-align: left;" class="confluenceTh">Spark</th><th style="text-align: left;" class="confluenceTh">Flink</th><th style="text-align: left;" class="confluenceTh">Apex</th></tr><tr><td class="confluenceTd">0</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td></tr><tr><td class="confluenceTd">1</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td></tr><tr><td class="confluenceTd">2</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td></tr><tr><td class="confluenceTd">3</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd"><a class="external-link" href="https://issues.apache.org/jira/browse/BEAM-1114" rel="nofollow">BEAM-1114</a></td></tr><tr><td class="confluenceTd">4</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td></tr><tr><td class="confluenceTd">5</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td></tr><tr><td class="confluenceTd">6</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td></tr><tr><td class="confluenceTd">7</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td></tr><tr><td class="confluenceTd">8</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td></tr><tr><td class="confluenceTd">9</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td></tr><tr><td class="confluenceTd">10</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td></tr><tr><td class="confluenceTd">11</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td></tr><tr><td class="confluenceTd">12</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td></tr></tbody></table></div><h3 id="RunningNexmark-Streaming/Synthetic/Local">Streaming / Synthetic / Local</h3><div class="table-wrap"><table class="wrapped confluenceTable"><colgroup><col/><col/><col/><col/><col/></colgroup><tbody><tr><th style="text-align: left;" class="confluenceTh">Query</th><th style="text-align: left;" class="confluenceTh">Direct</th><th style="text-align: left;" class="confluenceTh">Spark <a class="external-link" href="https://issues.apache.org/jira/browse/BEAM-2847" rel="nofollow">BEAM-2847</a></th><th style="text-align: left;" class="confluenceTh">Flink</th><th style="text-align: left;" class="confluenceTh">Apex</th></tr><tr><td class="confluenceTd">0</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td></tr><tr><td class="confluenceTd">1</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td></tr><tr><td class="confluenceTd">2</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td></tr><tr><td class="confluenceTd">3</td><td class="confluenceTd">ok</td><td class="confluenceTd"><a class="external-link" href="https://issues.apache.org/jira/browse/BEAM-2176" rel="nofollow">BEAM-2176</a>, <a class="external-link" href="https://issues.apache.org/jira/browse/BEAM-3961" rel="nofollow">BEAM-3961</a></td><td class="confluenceTd">ok</td><td class="confluenceTd"><a class="external-link" href="https://issues.apache.org/jira/browse/BEAM-1114" rel="nofollow">BEAM-1114</a></td></tr><tr><td class="confluenceTd">4</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td></tr><tr><td class="confluenceTd">5</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td></tr><tr><td class="confluenceTd">6</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td></tr><tr><td class="confluenceTd">7</td><td class="confluenceTd">ok</td><td class="confluenceTd"><a class="external-link" href="https://issues.apache.org/jira/browse/BEAM-2112" rel="nofollow">BEAM-2112</a></td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td></tr><tr><td class="confluenceTd">8</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td></tr><tr><td class="confluenceTd">9</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td></tr><tr><td class="confluenceTd">10</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td></tr><tr><td class="confluenceTd">11</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td></tr><tr><td class="confluenceTd">12</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td><td class="confluenceTd">ok</td></tr></tbody></table></div><h3 id="RunningNexmark-Batch/Synthetic/Cluster">Batch / Synthetic / Cluster</h3><p>Yet to come</p><h3 id="RunningNexmark-Streaming/Synthetic/Cluster">Streaming / Synthetic / Cluster</h3><p>Yet to come</p><h2 id="RunningNexmark-RunningNexmarksuitesonPullRequets&#39;scode">Running Nexmark suites on Pull Requets's code</h2><p>Nexmark suites can be run automatically using Jenkins on every PR on Github. This is done using <a class="external-link" href="https://wiki.jenkins.io/display/JENKINS/GitHub+pull+request+builder+plugin" rel="nofollow">ghprb-plugin</a> by posting appropriate commands in GitHub comments in PRs, like this: <br/><br/></p><p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image" draggable="false" width="700" src="/confluence/download/attachments/95654065/Screen%20Shot%202018-12-03%20at%2015.59.00.png?version=1&amp;modificationDate=1543849162000&amp;api=v2" data-image-src="/confluence/download/attachments/95654065/Screen%20Shot%202018-12-03%20at%2015.59.00.png?version=1&amp;modificationDate=1543849162000&amp;api=v2" data-unresolved-comment-count="0" data-linked-resource-id="97552803" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="Screen Shot 2018-12-03 at 15.59.00.png" data-base-url="https://cwiki.apache.org/confluence" data-linked-resource-content-type="image/png" data-linked-resource-container-id="95654065" data-linked-resource-container-version="4" alt=""></span></p><h3 id="RunningNexmark-Possiblecommands:">Possible commands:</h3><div class="table-wrap"><table class="wrapped confluenceTable"><colgroup><col/><col/><col/></colgroup><tbody><tr><th class="confluenceTh">Suite</th><th class="confluenceTh">Phrase</th><th colspan="1" class="confluenceTh">Description</th></tr><tr><td class="confluenceTd">Direct</td><td class="confluenceTd">Run Direct Runner Nexmark Tests</td><td colspan="1" class="confluenceTd">Runs SMOKE suite on Direct runner</td></tr><tr><td class="confluenceTd">Spark</td><td class="confluenceTd"><span>Run Spark Runner Nexmark Tests</span></td><td colspan="1" class="confluenceTd"><span>Runs SMOKE</span><span> suite on Spark</span></td></tr><tr><td class="confluenceTd">Flink</td><td class="confluenceTd"><span>Run Flink Runner Nexmark Tests</span></td><td colspan="1" class="confluenceTd"><span>Runs SMOKE</span><span> suite on Flink</span></td></tr><tr><td class="confluenceTd">Dataflow</td><td class="confluenceTd"><span>Run Dataflow Runner Nexmark Tests</span></td><td colspan="1" class="confluenceTd"><span>Runs STRESS suite on Dataflow</span></td></tr></tbody></table></div><p><br/></p><h2 id="RunningNexmark-RunningNexmarkmanually">Running Nexmark manually</h2><h3 id="RunningNexmark-RunningSMOKEsuiteontheDirectRunner(local)">Running SMOKE suite on the DirectRunner (local)</h3><p>The DirectRunner is default, so it is not required to pass <code class="highlighter-rouge">-Pnexmark.runner</code>. Here we do it for maximum clarity.</p><p>The direct runner does not have separate batch and streaming modes, but the Nexmark launch does.</p><p>These parameters leave on many of the DirectRunner’s extra safety checks so the SMOKE suite can make sure there is nothing broken in the Nexmark suite.</p><p>Batch Mode:</p><pre class="highlight"><code>./gradlew :sdks:java:testing:nexmark:run \
+    -Pnexmark.runner=&quot;:runners:direct-java&quot; \
+    -Pnexmark.args=&quot;
+        --runner=DirectRunner
+        --streaming=false
+        --suite=SMOKE
+        --manageResources=false
+        --monitorJobs=true
+        --enforceEncodability=true
+        --enforceImmutability=true&quot;
+</code></pre><p>Streaming Mode:</p><pre class="highlight"><code>./gradlew :sdks:java:testing:nexmark:run \
+    -Pnexmark.runner=&quot;:runners:direct-java&quot; \
+    -Pnexmark.args=&quot;
+        --runner=DirectRunner
+        --streaming=true
+        --suite=SMOKE
+        --manageResources=false
+        --monitorJobs=true
+        --enforceEncodability=true
+        --enforceImmutability=true&quot;
+</code></pre><h3 id="RunningNexmark-RunningSMOKEsuiteontheSparkRunner(local)">Running SMOKE suite on the SparkRunner (local)</h3><p>The SparkRunner is special-cased in the Nexmark gradle launch. The task will provide the version of Spark that the SparkRunner is built against, and configure logging.</p><p>Batch Mode:</p><pre class="highlight"><code>./gradlew :sdks:java:testing:nexmark:run \
+    -Pnexmark.runner=&quot;:runners:spark&quot; \
+    -Pnexmark.args=&quot;
+        --runner=SparkRunner
+        --suite=SMOKE
+        --streamTimeout=60
+        --streaming=false
+        --manageResources=false
+        --monitorJobs=true&quot;
+</code></pre><p>Streaming Mode:</p><pre class="highlight"><code>./gradlew :sdks:java:testing:nexmark:run \
+    -Pnexmark.runner=&quot;:runners:spark&quot; \
+    -Pnexmark.args=&quot;
+        --runner=SparkRunner
+        --suite=SMOKE
+        --streamTimeout=60
+        --streaming=true
+        --manageResources=false
+        --monitorJobs=true&quot;
+</code></pre><h3 id="RunningNexmark-RunningSMOKEsuiteontheFlinkRunner(local)">Running SMOKE suite on the FlinkRunner (local)</h3><p>Batch Mode:</p><pre class="highlight"><code>./gradlew :sdks:java:testing:nexmark:run \
+    -Pnexmark.runner=&quot;:runners:flink:1.5&quot; \
+    -Pnexmark.args=&quot;
+        --runner=FlinkRunner
+        --suite=SMOKE
+        --streamTimeout=60
+        --streaming=false
+        --manageResources=false
+        --monitorJobs=true
+        --flinkMaster=local&quot;
+</code></pre><p>Streaming Mode:</p><pre class="highlight"><code>./gradlew :sdks:java:testing:nexmark:run \
+    -Pnexmark.runner=&quot;:runners:flink:1.5&quot; \
+    -Pnexmark.args=&quot;
+        --runner=FlinkRunner
+        --suite=SMOKE
+        --streamTimeout=60
+        --streaming=true
+        --manageResources=false
+        --monitorJobs=true
+        --flinkMaster=local&quot;
+</code></pre><h3 id="RunningNexmark-RunningSMOKEsuiteontheApexRunner(local)">Running SMOKE suite on the ApexRunner (local)</h3><p>Batch Mode:</p><pre class="highlight"><code>./gradlew :sdks:java:testing:nexmark:run \
+    -Pnexmark.runner=&quot;:runners:apex&quot; \
+    -Pnexmark.args=&quot;
+        --runner=ApexRunner
+        --suite=SMOKE
+        --streamTimeout=60
+        --streaming=false
+        --manageResources=false
+        --monitorJobs=true&quot;
+</code></pre><p>Streaming Mode:</p><pre class="highlight"><code>./gradlew :sdks:java:testing:nexmark:run \
+    -Pnexmark.runner=&quot;:runners:apex&quot; \
+    -Pnexmark.args=&quot;
+        --runner=ApexRunner
+        --suite=SMOKE
+        --streamTimeout=60
+        --streaming=true
+        --manageResources=false
+        --monitorJobs=true&quot;
+</code></pre><h3 id="RunningNexmark-RunningSMOKEsuiteonGoogleCloudDataflow">Running SMOKE suite on Google Cloud Dataflow</h3><p>Set these up first so the below command is valid</p><pre class="highlight"><code>PROJECT=&lt;your project&gt;
+ZONE=&lt;your zone&gt;
+STAGING_LOCATION=gs://&lt;a GCS path for staging&gt;
+PUBSUB_TOPCI=&lt;existing pubsub topic&gt;
+</code></pre><p>Launch:</p><pre class="highlight"><code>./gradlew :sdks:java:testing:nexmark:run \
+    -Pnexmark.runner=&quot;:runners:google-cloud-dataflow-java&quot; \
+    -Pnexmark.args=&quot;
+        --runner=DataflowRunner
+        --suite=SMOKE
+        --streamTimeout=60
+        --streaming=true
+        --manageResources=false
+        --monitorJobs=true
+        --project=${PROJECT}
+        --zone=${ZONE}
+        --workerMachineType=n1-highmem-8
+        --stagingLocation=${STAGING_LOCATION}
+        --streaming=true
+        --sourceType=PUBSUB
+        --pubSubMode=PUBLISH_ONLY
+        --pubsubTopic=${PUBSUB_TOPIC}
+        --resourceNameMode=VERBATIM
+        --manageResources=false
+        --monitorJobs=false
+        --numEventGenerators=64
+        --numWorkers=16
+        --maxNumWorkers=16
+        --suite=SMOKE
+        --firstEventRate=100000
+        --nextEventRate=100000
+        --ratePeriodSec=3600
+        --isRateLimited=true
+        --avgPersonByteSize=500
+        --avgAuctionByteSize=500
+        --avgBidByteSize=500
+        --probDelayedEvent=0.000001
+        --occasionalDelaySec=3600
+        --numEvents=0
+        --useWallclockEventTime=true
+        --usePubsubPublishTime=true
+        --experiments=enable_custom_pubsub_sink&quot;
+</code></pre><h3 id="RunningNexmark-Runningquery0onaSparkclusterwithApacheHadoopYARN">Running query 0 on a Spark cluster with Apache Hadoop YARN</h3><p>Building package:</p><pre class="highlight"><code>./gradlew :sdks:java:testing:nexmark:assemble
+</code></pre><p>Submit to the cluster:</p><pre class="highlight"><code>spark-submit \
+    --class org.apache.beam.sdk.nexmark.Main \
+    --master yarn-client \
+    --driver-memory 512m \
+    --executor-memory 512m \
+    --executor-cores 1 \
+    sdks/java/testing/nexmark/build/libs/beam-sdks-java-nexmark-2.8.0-spark.jar \
+        --runner=SparkRunner \
+        --query=0 \
+        --streamTimeout=60 \
+        --streaming=false \
+        --manageResources=false \
+        --monitorJobs=true&quot;
+</code></pre><h2 id="RunningNexmark-Nexmarkdashboards">Nexmark dashboards</h2><p>Below dashboards are used as a CI mechanism to detect no-regression on the Beam components. They are not supposed to be benchmark comparision of the runners or engines. Especially because:</p><ul><li>Parameters of the runners are not the same</li><li>Nexmark is run with the runners in local (most of the time embedded) mode</li><li>Nexmark runs on a shared machine that also run all the CI and build.</li><li>Runners have different support of the Beam model</li><li>Runners have different strengths that make comparison difficult:<ul><li>Some runners were designed to be batch oriented, others streaming oriented</li><li>Some are designed towards sub-second latency, others support auto-scaling</li></ul></li></ul><h3 id="RunningNexmark-Dashboardscontent">Dashboards content</h3><p>At each commit on master, Nexmark suites are run and plots are created on the graphs.</p><p>There are 2 kinds of dashboards:</p><ul><li>one for performances (run times of the queries)</li><li>one for the size of the output PCollection (which should be constant)</li></ul><p>There are dashboards for these runners (others to come):</p><ul><li>spark</li><li>flink</li><li>direct runner</li></ul><p>Each dashboard contains:</p><ul><li>graphs in batch mode</li><li>graphs in streaming mode</li><li>graphs for the 13 queries.</li></ul><h3 id="RunningNexmark-Performancedashboardslinks">Performance dashboards links</h3><p><a class="external-link" href="https://apache-beam-testing.appspot.com/explore?dashboard=5084698770407424" rel="nofollow">Nexmark performance direct runner</a></p><p><a class="external-link" href="https://apache-beam-testing.appspot.com/explore?dashboard=5699257587728384" rel="nofollow">Nexmark performance flink runner</a></p><p><a class="external-link" href="https://apache-beam-testing.appspot.com/explore?dashboard=5138380291571712" rel="nofollow">Nexmark performance spark runner</a></p><p><a class="external-link" href="https://apache-beam-testing.appspot.com/explore?dashboard=5670405876482048" rel="nofollow">Nexmark performance dataflow runner</a></p><h3 id="RunningNexmark-Outputsizedashboardslinks">Output size dashboards links</h3><p><a class="external-link" href="https://apache-beam-testing.appspot.com/explore?dashboard=5099379773931520" rel="nofollow">Nexmark output size direct runner</a></p><p><a class="external-link" href="https://apache-beam-testing.appspot.com/explore?dashboard=5731568492478464" rel="nofollow">Nexmark output size flink runner</a></p><p><a class="external-link" href="https://apache-beam-testing.appspot.com/explore?dashboard=5163657986048000" rel="nofollow">Nexmark output size spark runner</a></p><p><a class="external-link" href="https://apache-beam-testing.appspot.com/explore?dashboard=5647201107705856" rel="nofollow">Nexmark output size dataflow runner</a></p>

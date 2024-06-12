@@ -1,0 +1,324 @@
+<h1 id="id-[BIP1]BeamSchemaOptions-Status">Status</h1><div class="plugin-tabmeta-details conf-macro output-block" data-hasbody="true" data-macro-name="details"><p><br /></p><div class="table-wrap"><table class="wrapped confluenceTable"><colgroup><col /><col /></colgroup><tbody><tr><td style="text-align: left;" class="confluenceTd"><strong>State</strong></td><td style="text-align: left;" class="confluenceTd"><span style="color: rgb(23,43,77);">Accepted</span></td></tr><tr><td style="text-align: left;" class="confluenceTd"><strong>Discussion Thread</strong></td><td style="text-align: left;" class="confluenceTd"><a class="external-link" href="https://lists.apache.org/thread.html/rba1e3b9e5eb022478e0ab3a10b2e791132aa0af8fda73574be2b458e%40%3Cdev.beam.apache.org%3E" rel="nofollow">[PROPOSAL] Beam Schema Options</a></td></tr><tr><td colspan="1" style="text-align: left;" class="confluenceTd"><strong>JIRA</strong></td><td colspan="1" style="text-align: left;" class="confluenceTd"><div class="content-wrapper"><p>
+<span class="jira-issue conf-macro output-block" data-client-id="SINGLE_5aa69414-a9e9-3523-82ec-879b028fb15b_147426205_073590d28789c11c0187b3346f63006f" data-hasbody="false" data-jira-key="BEAM-9275" data-macro-name="jira">
+                    <a href="https://issues.apache.org/jira/browse/BEAM-9275" class="jira-issue-key"><span class="aui-icon aui-icon-wait issue-placeholder"> </span>BEAM-9275</a>
+                            -
+            <span class="summary">Getting issue details...</span>
+                                                <span class="aui-lozenge aui-lozenge-subtle aui-lozenge-default issue-placeholder">STATUS</span>
+                </span>
+</p><p>
+<span class="jira-issue conf-macro output-block" data-client-id="SINGLE_5aa69414-a9e9-3523-82ec-879b028fb15b_147426205_073590d28789c11c0187b3346f63006f" data-hasbody="false" data-jira-key="BEAM-9035" data-macro-name="jira">
+                    <a href="https://issues.apache.org/jira/browse/BEAM-9035" class="jira-issue-key"><span class="aui-icon aui-icon-wait issue-placeholder"> </span>BEAM-9035</a>
+                            -
+            <span class="summary">Getting issue details...</span>
+                                                <span class="aui-lozenge aui-lozenge-subtle aui-lozenge-default issue-placeholder">STATUS</span>
+                </span>
+</p><p>
+<span class="jira-issue conf-macro output-block" data-client-id="SINGLE_5aa69414-a9e9-3523-82ec-879b028fb15b_147426205_073590d28789c11c0187b3346f63006f" data-hasbody="false" data-jira-key="BEAM-9044" data-macro-name="jira">
+                    <a href="https://issues.apache.org/jira/browse/BEAM-9044" class="jira-issue-key"><span class="aui-icon aui-icon-wait issue-placeholder"> </span>BEAM-9044</a>
+                            -
+            <span class="summary">Getting issue details...</span>
+                                                <span class="aui-lozenge aui-lozenge-subtle aui-lozenge-default issue-placeholder">STATUS</span>
+                </span>
+</p><ol><li><em><span>Conversion from Proto and Avro</span></em><span>: Extend the schema convertors for Proto and Avro so they translate the metadata present in the schema into options.</span></li><li><em><span>Logical Type as Schema Options</span></em><span>: Remove the metadata into FieldType and replace it by schema options.</span></li><li><em><span>Option API for Logical Types</span></em><span>: As the API is stabilised add it to the LogicalType as well.</span></li><li><span>Investigation enriching IO’s to use provide metadata.</span></li></ol></div></td></tr><tr><td colspan="1" style="text-align: left;" class="confluenceTd"><strong>Created</strong></td><td colspan="1" style="text-align: left;" class="confluenceTd"><div class="content-wrapper"><p>2019-01-01</p></div></td></tr></tbody></table></div></div><h1 id="id-[BIP1]BeamSchemaOptions-Motivation"><span style="font-size: 24.0px;letter-spacing: -0.01em;">Motivation</span></h1><p><span>Introduce the concept of Options in Beam Schema’s to add extra context to fields and schemas. In contrast to the current Beam metadata that is present in a FieldType, options would be added to fields, logical types and schemas. The schema convertors (ex. Avro, Proto, …) can add options/annotations/decorators that were in the original schema to the Beam schema with these options. These options, that add contextual metadata, can be used in the pipeline for specific transformations or augment the end schema in the target output.</span></p><h1 id="id-[BIP1]BeamSchemaOptions-CurrentstateinBeam">Current state in Beam</h1><p><code>(situation 2.20)</code> Without this proposal, if a user want the act on extra contextual information that is available in the schema she needs to act on this information out of the pipeline. This means that these implementations will be very format specific (a separate implementation for Protobuf, Avro, Json, etc...).</p><p><div class="toc-macro client-side-toc-macro  conf-macro output-block" data-hasbody="false" data-headerelements="H1,H2,H3,H4,H5,H6,H7" data-macro-name="toc"> </div></p><h1 id="id-[BIP1]BeamSchemaOptions-History">History</h1><h2 id="id-[BIP1]BeamSchemaOptions-Revision">Revision</h2><div class="table-wrap"><table class="confluenceTable"><colgroup><col/><col/><col/></colgroup><tbody><tr><th class="confluenceTh">DATE</th><th class="confluenceTh">AUTHOR</th><th class="confluenceTh">DESCRIPTION</th></tr><tr><td class="confluenceTd">2019-02-28</td><td class="confluenceTd">Alex Van Boxel</td><td class="confluenceTd">Changed to Accepted Proposal</td></tr><tr><td class="confluenceTd"><div class="content-wrapper"><p>2019-01-01</p></div></td><td class="confluenceTd">Alex Van Boxel</td><td class="confluenceTd">Initial Proposal</td></tr></tbody></table></div><h2 id="id-[BIP1]BeamSchemaOptions-Vote">Vote</h2><p>This proposal has been accepted on February 28, 2020 after a 7 day voting period: <a class="external-link" href="https://lists.apache.org/thread.html/r2c92cfde83c8c03061f3cfbcc510f08217c552c9a0718387590a1571%40%3Cdev.beam.apache.org%3E" rel="nofollow">[VOTE]</a></p><div class="table-wrap"><table class="confluenceTable"><colgroup><col/><col/></colgroup><tbody><tr><td class="confluenceTd">+1</td><td class="confluenceTd">7 votes (3 binding)</td></tr><tr><td class="confluenceTd">-1</td><td class="confluenceTd">0 votes</td></tr></tbody></table></div><h1 id="id-[BIP1]BeamSchemaOptions-Implementationchoice"><span>Implementation </span>choice</h1><h2 id="id-[BIP1]BeamSchemaOptions-Typedoptions"><strong>Typed options</strong></h2><p><span>Options are key value pairs on schemas, fields and logical types. </span></p><p><span>The </span><strong>key</strong><span> can be any string and Beam should not set any restriction on this, aside that it should be able to serialize in the portable schema. Keys names will be very dependent on where they come from. Option keys from protobuf will generally have a hierarchy then came from the package and field name separated by dots. Options keys generated by the user can be very different.</span></p><p><span>The </span><strong>values</strong><span> are typed and can contain any type defined in the Beam row schema system. This also includes </span><strong>Arrays, Maps and Rows</strong><span>. By using the same type system for options they are, in contrast to the current metadata, </span><em><span>portable</span></em><span>.</span></p><p><span>Having strongly typed options will preserve the type information when mapping from a format that has a rich metadata system (example: Protobuf). The only downside is that most of the source formats don’t have type information and will end up in strings..</span></p><h2 id="id-[BIP1]BeamSchemaOptions-Phasedrollout"><strong>Phased rollout</strong></h2><p><span>Options can be rolled out in different phases.</span></p><ol><li><em><span>Options API for Schema and Field</span></em><span>: Add the options to schema and field so it can be used by the user and inside Transforms to test out the concepts.</span></li><li><em><span>Conversion from Proto and Avro</span></em><span>: Extend the schema convertors for Proto and Avro so they translate the metadata present in the schema into options.</span></li><li><em><span>Logical Type as Schema Options</span></em><span>: Remove the metadata into FieldType and replace it by schema options.</span></li><li><em><span>Option API for Logical Types</span></em><span>: As the API is stabilised add it to the LogicalType as well.</span></li><li><span>Investigation enriching IO’s to use provide metadata.</span></li></ol><h1 id="id-[BIP1]BeamSchemaOptions-RejectedAlternatives">Rejected Alternatives</h1><h3 id="id-[BIP1]BeamSchemaOptions-Untypedoptions"><strong>Untyped options</strong></h3><p><span>An alternative implementation is having untyped options. That would mean storing all the value options as strings. But that means when you have a source format that has typed metadata you need to define mapping between the types and strings (example: boolean true to “true” or 1?). But this is error prone and could lead to different mappings from different source formats.</span></p><h3 id="id-[BIP1]BeamSchemaOptions-ExtendingMetadata"><strong>Extending Metadata</strong></h3><p><span>The current metadata is currently defined on the FieldType which makes the access pattern strange. The metadata was also clearly not intended to be portable and just a binary container for specific purposes (data for logical types).</span></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">String pkSequence = f.getType().getMetadataString(&quot;example.contract.v1.primary_key&quot;);
+if (!pkSequence.isEmpty()) {
+  primaryKeyMap.put(Integer.valueOf(pkSequence), dataSchema.indexOf(f.getName()));</pre>
+</div></div><p>As metadata is only available on the field type you can only set values on fields not explicitly on a schema.</p><h3 id="id-[BIP1]BeamSchemaOptions-Notportableimplementation"><span>Not portable implementation</span></h3><p><span><span style="color: rgb(23,43,77);">It would be possible to implement options in the Java SDK only and not be included in the model. But doing this would be confusing in cross platform pipelines. If you have options read by the Java implementation, go with a row to a Python transform and then back to Java while loosing the options along the way would be confusing for the user.</span></span></p><h1 id="id-[BIP1]BeamSchemaOptions-ImplementationDetail"><span>Implementation Detail</span></h1><h2 id="id-[BIP1]BeamSchemaOptions-BeamAPI"><span>Beam API</span></h2><p><span>The API is fairly simple and are extensions on schema, field and logical types.</span></p><h3 id="id-[BIP1]BeamSchemaOptions-Readingvalues(schemaandfields)"><strong>Reading values (schema and fields)</strong></h3><p><span>Getting the values is done via the getOptions method on both schema and field.</span></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">Schema.Options options = schema.getField(&quot;field_one&quot;).getOptions();
+
+Integer optionInteger = options.getValue(&quot;example.field_option_int32&quot;)</pre>
+</div></div><p><span>The options object has methods to get the value.</span></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">@Nullable
+public &lt;T&gt; T getValue(String optionName)
+
+@Nullable
+public &lt;T&gt; T getValue(String optionName, Class&lt;T&gt; valueClass)
+
+@Nullable
+public &lt;T&gt; T getValueOrDefault(String optionName, T defaultValue)</pre>
+</div></div><p><span>As well as a way to option the type of the option.</span></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">@Nullable
+public FieldType getType(String optionName)</pre>
+</div></div><p><span>Because the type system options can also be arrays, maps and rows.</span></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">...
+Row optionMessage = options.getValue(&quot;example.field_option_message&quot;)</pre>
+</div></div><p><span>Some extra methods on the options object to see if any option is set and to get all option names that are available.</span></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">public Set&lt;String&gt; getOptionNames()
+
+public boolean hasOptions()</pre>
+</div></div><h3 id="id-[BIP1]BeamSchemaOptions-Writingvalues(schemaandfields)"><strong>Writing values (schema and fields)</strong></h3><p><span>As Schema and Fields are immutable objects, the only way to set options is to start an option builder and attach them to the schema or field via the withOptions method. The option returns a </span><em><span>new schema</span></em><span> or field with the options set. If the schema already had options they will be kept, except when the option name was the same, they will be overwritten.</span></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">// Schema
+
+/** Returns a copy of the Schema with the options set. */
+public Schema withOptions(Options options)
+
+// Schema.Field
+
+/** Returns a copy of the Field with the options set. */
+public Field withOptions(Options options)</pre>
+</div></div><p><span>The standard way to start setting options is to start the builder by calling the static builder() method on the Options class (part of Schema).</span></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">// Schema.Options
+public static Options.Builder builder()</pre>
+</div></div><p><span>The Options class also includes typed convenience methods so you can start building options in a fluent way.</span></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">Schema.Options options = Schema.Options
+    .setBooleanOption(OPTION_NAME, true)
+    .build();</pre>
+</div></div><p><span>Because the builder also has the same setters you can conveniently build options by chaining them.</span></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">Schema.Options options = Schema.Options
+    .setBooleanOption(OPTION_NAME_1, true)
+    .setStringOption(OPTION_NAME_2, “foo”)
+    .setIntegerOption(OPTION_NAME_3, 42)
+    .build();</pre>
+</div></div><p><span>It’s important to note that the options use the same schema type system. This gets apparent in the setters for arrays, maps and rows.</span></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">Schema.Options options = Schema.Options
+    .setArrayOption(
+        OPTION_NAME, 
+        FieldType.array(FieldType.STRING), 
+        TEST_LIST)
+    .build();
+
+Schema.Options options = Schema.Options
+    .setMapOption(
+        OPTION_NAME, 
+        FieldType.map(FieldType.INT32, FieldType.STRING), 
+        TEST_MAP)
+    .build();
+
+// Row has a schema type build in
+Schema.Options options = Schema.Options
+    .setRowOption(OPTION_NAME, TEST_ROW)
+    .build()</pre>
+</div></div><p class="auto-cursor-target"><span style="letter-spacing: 0.0px;">After the option object is built they need to be attached to the schema or fields with the withOptions method, that will create a copy of the schema with the options set.</span></p><p><span>Note that options are nullable. That means that removing an option can be done by setting a value to null. Having a value of null is the same as the option being not present.</span></p><h3 id="id-[BIP1]BeamSchemaOptions-LogicalTypeOptions"><strong>Logical Type Options</strong></h3><p><span>Logical Type options are out of scope for this first draft as first the schema and field options should be frozen.</span></p><h2 id="id-[BIP1]BeamSchemaOptions-Portability"><span>Portability</span></h2><p><span>Options will introduce a new message in the portable schema.</span></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">message Option {
+  string name = 1;
+  FieldType type = 2;
+  FieldValue value = 3;
+}</pre>
+</div></div><p><span>Options can be attached to the schema and field in a map.</span></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">message Schema {
+  repeated Field fields = 1;
+  string id = 2;
+  map&lt;string, Option&gt; options = 3;
+}
+
+message Field {
+  string name = 1;
+  string description = 2;
+  FieldType type = 3;
+  int32 id = 4;
+  int32 encoding_position = 5;
+  map&lt;string, Option&gt; options = 6;
+}</pre>
+</div></div><p><span>They can also be attached to Logical Types.</span></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">message LogicalType {
+  string urn = 1;
+  bytes payload = 2;
+  FieldType representation = 3;
+  FieldType argument_type = 4;
+  FieldValue argument = 5;
+  map&lt;string, Option&gt; options = 6;
+}</pre>
+</div></div><h2 id="id-[BIP1]BeamSchemaOptions-Mappings"><span>Mappings</span></h2><h3 id="id-[BIP1]BeamSchemaOptions-Protobuf"><strong>Protobuf</strong></h3><p><span>Protobuf has a rich meta system also called </span><a class="external-link" href="https://developers.google.com/protocol-buffers/docs/proto3#options" rel="nofollow"><span>options</span></a><span> that can be mapped to the Beam Options. Proto supports the options on the following elements:</span></p><ul><li><span>Field</span></li><li><span>Message</span></li><li><span>EnumValue</span></li><li><span>Enum</span></li><li><span>File</span></li><li><span>Service</span></li><li><span>Method</span></li></ul><p><span><br/></span></p><p><span>In the first phase mapping Fields and Messages options are straight forward as they map 1:1 to Beam concepts. Mapping Enum/EnumValue will be possible when options on Logical Types are implemented as Enums are mapped to a Logical Type in Beam. File options is too broadly scoped and don't add a lot of semantic meaning on Beam field or row level.</span></p><p><span>Service and method is out of scope for Beam.</span></p><p><span>Example of Protobuf Field options:</span></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">message ToFlatten {
+    // re-usable metadata, we want to always collapse in parent message
+    Meta meta = 666 [(example.collapse_in_parent) = true];
+    string field_one = 1;
+    int32 field_two = 2;
+    int32 field_three = 3;
+    string field_four = 4;
+}
+
+message Meta {
+    string event_id = 1;
+    int32 event_sequence = 2;
+    google.protobuf.Timestamp event_timestamp = 3;
+}</pre>
+</div></div><p><span>Example of Protobuf Message options:</span></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">message BigQueryOptionMessageTruncateYear {
+  option (message_bigquery).time_partitioning_field = &quot;timestamp&quot;;
+  option (message_bigquery).add_time_partitioning_truncate_column = YEAR;
+  google.protobuf.Timestamp timestamp = 3;
+}</pre>
+</div></div><h3 id="id-[BIP1]BeamSchemaOptions-Avro"><strong>Avro</strong></h3><p><a class="external-link" href="https://avro.apache.org/docs/current/spec.html" rel="nofollow"><span>Avros</span></a><span> doesn’t specify a clear description about options or other metadata, but it’s been used in the practice. Here is a redacted example:</span></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">{
+  &quot;type&quot;: &quot;record&quot;,
+  &quot;name&quot;: &quot;Value&quot;,
+  &quot;connect.name&quot;: &quot;test.ns.Value&quot;,
+  &quot;fields&quot;: [
+    {
+      &quot;name&quot;: &quot;ts&quot;,
+      &quot;type&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;connect.version&quot;: 1,
+        &quot;connect.default&quot;: &quot;1970-01-01T00:00:00Z&quot;,
+        &quot;connect.name&quot;: &quot;io.debezium.time.ZonedTimestamp&quot;
+      },
+      &quot;default&quot;: &quot;1970-01-01T00:00:00Z&quot;
+    }
+  ]
+}</pre>
+</div></div><p><span>In the above example we are seeing annotations added by a Debezium process. The options can be added to the schema or field.</span></p><h3 id="id-[BIP1]BeamSchemaOptions-JSONSchema"><strong>JSON Schema</strong></h3><p>...</p><h3 id="id-[BIP1]BeamSchemaOptions-ZetaSQL"><strong>Zeta SQL</strong></h3><p><span>ZetaSQL also has the options concept, these options can be added to the schema and fields as string values. </span></p><p><span>See  </span><a class="external-link" href="https://github.com/google/zetasql/blob/master/docs/data-definition-language.md" rel="nofollow"><span>ZetaSQL data definition language</span></a><span>  for more details.</span></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">CREATE
+   [ OR REPLACE ]
+   [ TEMP | TEMPORARY ]
+   TABLE
+   [ IF NOT EXISTS ]
+   table_name [ ( table_element, ... ) ]
+   [ PARTITION [ hints ] BY partition_expression, ... ]
+   [ CLUSTER [ hints ] BY cluster_expression, ... ]
+   [ OPTIONS (key=value, ...) ]
+   [ AS query ];</pre>
+</div></div><p><br/></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">column_definition:
+   column_name
+   [ column_type ]
+   [ generation_clause ]
+   [ column_attribute, ... ]
+   [ OPTIONS (...) ]</pre>
+</div></div><p><br/></p><h3 id="id-[BIP1]BeamSchemaOptions-CalciteSQL"><strong>Calcite SQL</strong></h3><p><span>Unfortunately Calcite doesn’t have syntax to provide extra metadata to it’s columns. Need more investigation to see how and if it’s worth it to extend Calcite and/or the Beam extension.</span></p><p><span>See </span><a class="external-link" href="https://github.com/apache/beam/blob/master/sdks/java/extensions/sql/src/main/codegen/includes/parserImpls.ftl#L149" rel="nofollow"><span>parserImpls.ftl</span></a></p><p><br/></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">CREATE TABLE ( IF NOT EXISTS )?
+   ( database_name '.' )? table_name '(' column_def ( ',' column_def )* ')'
+   TYPE type_name
+   ( COMMENT comment_string )?
+   ( LOCATION location_string )?
+   ( TBLPROPERTIES tbl_properties )?</pre>
+</div></div><h3 id="id-[BIP1]BeamSchemaOptions-SQL/MED"><strong>SQL/MED</strong></h3><p><span>The SQL standard for <strong>M</strong>anagement of <strong>E</strong>xternal <strong>D</strong>ata from SQL:2003 and SQL:2008 defines table-level and column-level options. See <a class="external-link" href="https://en.wikipedia.org/wiki/SQL/MED" rel="nofollow">https://en.wikipedia.org/wiki/SQL/MED</a> for overview and links. SQL standard docs require paid access.</span></p><h1 id="id-[BIP1]BeamSchemaOptions-UseCases"><span>Use Cases</span></h1><p><span>This section describes some examples where options could be used. Those examples transformations are not built into Beam. But as the options are pass-through metadata they are available in the </span><span>expand</span><span> of a transform.</span></p><p><span>Almost all of the use-cases describe examples where the data comes from outside the pipelines, like defined in ProtoBuf or Avro. This is the most common use or source for options.</span></p><div class="confluence-information-macro confluence-information-macro-note conf-macro output-block" data-hasbody="true" data-macro-name="note"><span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"> </span><div class="confluence-information-macro-body"><p><strong>Note about the examples</strong><span>: Examples are simplified and in general schema inspection should be handled in the </span><span>expand</span><span> of a transform for optimal performance as the schema is already known at pipeline expansion.</span></p></div></div><p><span>Some of these examples could be added to the examples in Beam.</span></p><h2 id="id-[BIP1]BeamSchemaOptions-BasicTransformations"><strong>Basic Transformations</strong></h2><p><span>Pipeline authors could create code that automatically transforms data or structures based on metadata that originates from the source schema.</span></p><h3 id="id-[BIP1]BeamSchemaOptions-Collapsechildrowintoparentrow"><strong>Collapse child row into parent row</strong></h3><p><span>Imagine a system where a lot of schemas are defined by the business and the contracts have a reusable event row to carry timestamp and id. Because we always collapse the field into our target data warehouse we could set a specific option on the event field. In this example we use protobuf to define the schemas and the convention is to have an option on our field we want to collapse.</span></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">message ToFlatten {
+    // re-usable metadata, we want to always collapse in parent message
+    Event event = 666 [(example.collapse_in_parent) = true];
+    string field_one = 1;
+    int32 field_two = 2;
+    int32 field_three = 3;
+    string field_four = 4;
+}
+
+message Event {
+    string event_id = 1;
+    int32 event_sequence = 2;
+    google.protobuf.Timestamp event_timestamp = 3;
+}</pre>
+</div></div><p><span>Beams Proto to Schema provider is responsible for attaching the  example.collapse_in_parent to the meta field. As the user has dozens of schemas that reuse the metadata and we always want to collapse it into the parent row they found it worth creating a transform that collapses the rows. This transform is reusable over all there different schemas.</span></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">Row [ 
+  event:Row [
+    event_id:string ,
+    event_sequence:int , 
+    event_timestamp:datetime , 
+  ] : { options: “example.collapse_in_parent” = true }
+  field_one:string ,
+  Field_two:int ,
+  field_three:int ,
+  field_four:string
+]
+
+=&gt; User written transform that handles “example.collapse_in_parent =&gt;
+
+Row [ 
+  event_id:string ,
+  event_sequence:int , 
+  event_timestamp:datetime , 
+  field_one:string ,
+  Field_two:int ,
+  field_three:int ,
+  field_four:string
+]</pre>
+</div></div><h3 id="id-[BIP1]BeamSchemaOptions-HandleCDCfields"><strong>Handle CDC fields</strong></h3><p><span>Transforming a textual string into a datetime. Imagine a CDC system getting data in a textual format. By having metadata described in options a transform can convert it into a proper datetime. </span></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">{
+  &quot;type&quot;: &quot;record&quot;,
+  &quot;name&quot;: &quot;Value&quot;,
+  &quot;connect.name&quot;: &quot;test.ns.Value&quot;,
+  &quot;fields&quot;: [
+    {
+      &quot;name&quot;: &quot;ts&quot;,
+      &quot;type&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;connect.version&quot;: 1,
+        &quot;connect.default&quot;: &quot;1970-01-01T00:00:00Z&quot;,
+        &quot;connect.name&quot;: &quot;io.debezium.time.ZonedTimestamp&quot;
+      },
+      &quot;default&quot;: &quot;1970-01-01T00:00:00Z&quot;
+    }
+  ]
+}</pre>
+</div></div><p><span>In this AVRO schema example we could imagine someone writing a transform that handles all the STRING -&gt; TIMESTAMP conversions when the option is set.</span></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">...
+  switch (field.getType().getTypeName()) {
+    case STRING:
+      String connectName = field.getOptions().getValue(&quot;connect.name&quot;)
+      if(“io.debezium.time.ZonedTimestamp”.equals(connectName) {
+        builder.addValue(
+          parseDateTime(row.getValue(field));
+      }
+      break;
+...</pre>
+</div></div><h3 id="id-[BIP1]BeamSchemaOptions-Constructauniquekeyfield."><strong>Construct a unique key field.</strong></h3><p><span>Construct a unique key field from a composition of other fields that are annotated.</span></p><h3 id="id-[BIP1]BeamSchemaOptions-Encryptionbasedonoption"><strong>Encryption based on option</strong></h3><p><span>Imagine a business that annotates it’s schemas with options indicating that a field is personal identifiable information. The option is a string value that indicates the field that holds the userId. </span></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">static DoFn&lt;Row, Row&gt; fnEncryptPerUser() {
+  return new DoFn&lt;Row, Row&gt;() {
+    @ProcessElement
+    public void encryptPerUserFn(
+        @Element Row row, MultiOutputReceiver receiver) 
+    {
+      Row.Builder builder =  Row.withSchema(row.getSchema());
+      row.getSchema().getFields().forEach(
+        field -&gt; {
+          switch (field.getType().getTypeName()) {
+            case STRING:
+              String userField = field.getOptions().getValue(&quot;encrypt.ppi&quot;)
+              String userId = row.getValue(userId);
+              if(userId != null) {
+                builder.addValue(
+                  encryptForUser(row.getValue(field), userId);
+              }
+              break;
+            default:
+              builder.addValue(row.getValue(field);
+         }
+...</pre>
+</div></div><h3 id="id-[BIP1]BeamSchemaOptions-CreateaSQLtransformation"><strong>Create a SQL transformation</strong></h3><p><span>Options could be used to generate SQL that could be executed by the Calcite SQL engine.</span></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">Row [ 
+  field_one:string ,
+  field_two:int ,
+  field_three:datetime 
+    { options: “example.sql” = “EXTRACT(DAY FROM ${field})”,
+               “example.rename” = “day” } ,
+  field_four:string
+]
+
+=&gt; Transform that creates a SQL that does the transform =&gt;
+
+SELECT 
+  field_one, 
+  field_two, 
+  EXTRACT(DAY FROM field_three) as day,
+  field_four</pre>
+</div></div><p><br/></p><div class="confluence-information-macro confluence-information-macro-information conf-macro output-block" data-hasbody="true" data-macro-name="info"><span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"> </span><div class="confluence-information-macro-body"><p><strong>Note</strong><span>: An option to SQL builder or utilities could be a useful addition to the examples or Beam utilities, but this is not part of the proposal.</span></p></div></div><p><br/></p><h2 id="id-[BIP1]BeamSchemaOptions-DataQuality"><strong>Data Quality</strong></h2><p><span>Pipeline authors could create transforms for validating the data quality. This could be done through options that set the limits and requirement for the data. For example the options defined by </span><a class="external-link" href="https://github.com/envoyproxy/protoc-gen-validate/blob/master/validate/validate.proto" rel="nofollow"><span>validate.proto</span></a><span> could be used for setting these requirements.</span></p><p><span>Here is a very </span><strong>naive</strong><span> example usage for validating that an array has at least one element.</span></p><div class="code panel pdl conf-macro output-block" data-hasbody="true" data-macro-name="code" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: java; gutter: false; theme: Default" data-theme="Default">static DoFn&lt;Row, Row&gt; fnValidateArrayMinOne(String contractName) {
+  return new DoFn&lt;Row, Row&gt;() {
+    @ProcessElement
+    public void validateContentFn(
+        @Element Row row, MultiOutputReceiver receiver) 
+    {
+      DeadLetter.Builder dl = DeadLetter.forContract(contractName)
+      inspectRow(dl, row.getRow(&quot;data&quot;), &quot;&quot;);
+      if (dl.hasErrors()) {
+        receiver.get(DEAD_LETTER_TAG).output(dl.build());
+      } else {
+        receiver.get(OUTPUT_TAG).output(row);
+      }
+    }
+
+    void inspectRow(DeadLetter.Builder dl, Row row, String parent) {
+      row.getSchema().getFields().forEach(
+        field -&gt; {
+          switch (field.getType().getTypeName()) {
+            case ARRAY:
+              if(field.getOptions().getValue(&quot;example.arrayminone&quot;)) {
+                List&lt;Object&gt; array = row.getArray(field.getName();
+                if(array == null || array.size() == 0) {
+                  dl.addError(&quot;Array should have minimal 1 element&quot;);
+                }
+              }
+              break;
+            default:
+         }
+...</pre>
+</div></div><h2 id="id-[BIP1]BeamSchemaOptions-IO"><strong>IO</strong></h2><p><span>IO’s can use options to add extra information to the schema or use the options to change it’s behaviour on certain fields. For example:</span></p><ul><li><span>BigQuery partition column, clustering, etc…</span></li><li><span>Construct a BigTable row key from specific fields with a certain hashing</span></li><li><span>Cloud PubSub map columns to message attributes (</span><a class="external-link" href="https://issues.apache.org/jira/browse/BEAM-9208" rel="nofollow"><span>BEAM-9208</span></a><span>), or message publish time (</span><a class="external-link" href="https://issues.apache.org/jira/browse/BEAM-9209" rel="nofollow"><span>BEAM-9209</span></a><span>)</span></li></ul><p><span><br/></span></p><div class="table-wrap"><table class="wrapped confluenceTable"><colgroup><col/></colgroup><tbody><tr><td class="confluenceTd"><p><strong>Note</strong><span>: Options specific to IO could benefit to have a standardized URN schema, but this is out of scope from this initial proposal.</span></p></td></tr></tbody></table></div>
