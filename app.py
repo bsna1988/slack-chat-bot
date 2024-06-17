@@ -7,19 +7,25 @@ from haystack.pipelines import ExtractiveQAPipeline
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 
-import index_resources
+import document_store
+import preprocessor
 
 load_dotenv()
 SLACK_BOT_TOKEN = os.environ['SLACK_BOT_TOKEN']
 SLACK_APP_TOKEN = os.environ['SLACK_APP_TOKEN']
 
 app = App(token=SLACK_BOT_TOKEN)
-document_store = index_resources.index_resources()
-retriever = EmbeddingRetriever(document_store=document_store,
-                               embedding_model="sentence-transformers/multi-qa-mpnet-base-dot-v1")
-document_store.update_embeddings(retriever)
 
-reader = FARMReader(model_name_or_path="deepset/deberta-v3-large-squad2", use_gpu=True)
+retriever = EmbeddingRetriever(
+    document_store=document_store.document_store,
+    embedding_model="sentence-transformers/multi-qa-mpnet-base-dot-v1")
+
+doc_dir = 'Apache Beam Documentation/'
+documents = preprocessor.preprocess(doc_dir)
+document_store.index_documents(docs=documents, retriever=retriever)
+
+reader = FARMReader(model_name_or_path="deepset/deberta-v3-large-squad2",
+                    use_gpu=True)
 pipe = ExtractiveQAPipeline(reader, retriever)
 
 
